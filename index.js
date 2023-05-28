@@ -15,22 +15,32 @@ app.post('/', function(req, res){
     let unit = 'metric';
     const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${appid}&units=${unit}`;
     https.get(url, function(response){
-        response.on('data', function(data){
-            const weatherData = JSON.parse(data);
-            const description = weatherData.weather[0].description;
-            const temp = weatherData.main.temp;
-            const visibility = weatherData.visibility;
-            const icon = weatherData.weather[0].icon;
-            const iconURL = 'https://openweathermap.org/img/wn/'+icon+'@2x.png';
-
-            res.write("<h1> the weather is "+description +"</h1>");
-            res.write("<h1> the temprature is "+temp +"</h1>");
-            res.write("<h1> the visibility is "+visibility +"</h1>");
-            res.write('<img src="'+iconURL+'">');
-            res.send();
-        })
+        if(response.statusCode === 200){
+            response.on('data', function(data){
+                const weatherData = JSON.parse(data);
+                const description = weatherData.weather[0].description;
+                const temp = weatherData.main.temp;
+                const visibility = weatherData.visibility;
+                const icon = weatherData.weather[0].icon;
+                const iconURL = 'https://openweathermap.org/img/wn/'+icon+'@2x.png';
+    
+                res.write("<h1> the weather is "+description +"</h1>");
+                res.write("<h1> the temprature is "+temp +"</h1>");
+                res.write("<h1> the visibility is "+visibility +"</h1>");
+                res.write('<img src="'+iconURL+'">');
+                res.send();
+            })
+        }
+        else{
+            res.sendFile(__dirname + '/failure.html');
+        }
+       
     })
 
+})
+
+app.post('/failure', function(req, res){
+    res.redirect('/');
 })
 
 
